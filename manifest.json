@@ -1,0 +1,24 @@
+{
+    "name": "zc和lcz的温馨小窝",
+    "short_name": "甜蜜小窝",
+    "start_url": "index.html",
+    "display": "standalone",
+    "background_color": "#141e30",
+    "theme_color": "#141e30",
+    "orientation": "portrait-primary",
+    "description": "zc和lcz的专属小窝，记录甜蜜时光",
+    "icons": [
+        {
+            "src": "android-launchericon-192-192.png",
+            "type": "image/png",
+            "sizes": "192x192",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "android-launchericon-512-512.png",
+            "type": "image/png",
+            "sizes": "512x512",
+            "purpose": "any maskable"
+        }
+    ]
+}

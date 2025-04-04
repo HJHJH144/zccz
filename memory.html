@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>zc和lcz的美好回忆</title>
+    <!-- PWA相关 -->
+    <meta name="theme-color" content="#141e30">
+    <meta name="description" content="zc和lcz的专属回忆，记录甜蜜时光">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="android-launchericon-192-192.png">
+    <style>
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+            color: #fff;
+            background: linear-gradient(135deg, #141e30, #243b55);
+        }
+
+        .container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .header {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .back-btn {
+            background: linear-gradient(45deg, #ff758c, #ff7eb3);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .love-screen {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            height: calc(100% - 80px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .heart-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .message-container {
+            position: relative;
+            z-index: 1;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 80%;
+            margin-bottom: 50px;
+        }
+
+        .stars-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .btn-next {
+            background: linear-gradient(45deg, #ff758c, #ff7eb3);
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 2;
+            position: relative;
+            margin-top: 20px;
+        }
+
+        .fireworks-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .message-container h2,
+        .message-container div {
+            animation: fadeIn 1s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    style="margin-right: 8px;">
+                    <path
+                        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                    </path>
+                </svg>
+                zc和lcz的美好回忆
+            </h1>
+            <a href="index.html" class="back-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    style="margin-right: 5px;">
+                    <path d="M19 12H5M12 19l-7-7 7-7"></path>
+                </svg>
+                返回主页
+            </a>
+        </div>
+
+        <div class="love-screen" id="loveScreen">
+            <div class="heart-container"></div>
+            <div class="message-container">
+                <h2 id="personName"></h2>
+                <div id="loveMessage"></div>
+                <div class="fireworks-container"></div>
+            </div>
+            <button id="nextBtn" class="btn-next">下一页</button>
+            <div class="stars-container"></div>
+        </div>
+    </div>
+
+    <audio id="bgMusic" loop>
+        <source src="https://file-examples.com/storage/feaade38c1651bd01984236/2017/11/file_example_MP3_700KB.mp3"
+            type="audio/mpeg">
+    </audio>
+
+    <script>
+        // 加载原始脚本中的动画和消息功能
+        document.addEventListener('DOMContentLoaded', function () {
+            const loveScreen = document.getElementById('loveScreen');
+            const personName = document.getElementById('personName');
+            const loveMessage = document.getElementById('loveMessage');
+            const nextBtn = document.getElementById('nextBtn');
+            const bgMusic = document.getElementById('bgMusic');
+
+            // 爱情消息数组
+            const messages = [
+                {
+                    name: "zc",
+                    message: "亲爱的lcz，遇见你是我生命中最美丽的意外。"
+                },
+                {
+                    name: "lcz",
+                    message: "zc，你的笑容是我每天醒来的动力。"
+                },
+                {
+                    name: "zc",
+                    message: "无论天气如何变化，有你在的地方永远是晴天。"
+                },
+                {
+                    name: "lcz",
+                    message: "感谢你一直以来的陪伴，让我知道什么是真正的爱情。"
+                },
+                {
+                    name: "zc",
+                    message: "我爱你，不只是今天，而是生命中的每一天。"
+                }
+            ];
+
+            let currentIndex = 0;
+
+            // 显示消息
+            function showMessage(index) {
+                personName.textContent = messages[index].name;
+                loveMessage.textContent = messages[index].message;
+
+                // 添加动画效果
+                personName.style.animation = 'fadeIn 1s ease';
+                loveMessage.style.animation = 'fadeIn 1s ease 0.5s both';
+
+                // 添加爱心背景
+                animateHearts();
+
+                // 如果是最后一条消息，修改按钮文本
+                if (index === messages.length - 1) {
+                    nextBtn.textContent = '重新开始';
+                } else {
+                    nextBtn.textContent = '下一页';
+                }
+            }
+
+            // 下一页按钮点击事件
+            nextBtn.addEventListener('click', function () {
+                currentIndex = (currentIndex + 1) % messages.length;
+                showMessage(currentIndex);
+
+                // 如果是第一条消息，显示烟花效果
+                if (currentIndex === 0) {
+                    createFireworks();
+                }
+            });
+
+            // 创建爱心动画
+            function animateHearts() {
+                const heartContainer = document.querySelector('.heart-container');
+                heartContainer.innerHTML = '';
+
+                for (let i = 0; i < 15; i++) {
+                    createHeart(heartContainer);
+                }
+            }
+
+            // 创建单个爱心
+            function createHeart(container) {
+                const heart = document.createElement('div');
+                heart.innerHTML = '❤️';
+                heart.style.position = 'absolute';
+                heart.style.fontSize = `${Math.random() * 20 + 10}px`;
+                heart.style.left = `${Math.random() * 100}%`;
+                heart.style.top = `${Math.random() * 100}%`;
+                heart.style.opacity = '0';
+                heart.style.animation = `float ${Math.random() * 10 + 5}s linear infinite, fadeIn 1s ease forwards`;
+                heart.style.animationDelay = `${Math.random() * 5}s`;
+
+                container.appendChild(heart);
+            }
+
+            // 创建星星背景
+            function createStars() {
+                const starsContainer = document.querySelector('.stars-container');
+                starsContainer.innerHTML = '';
+
+                for (let i = 0; i < 100; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'star';
+                    star.style.position = 'absolute';
+                    star.style.width = `${Math.random() * 3 + 1}px`;
+                    star.style.height = star.style.width;
+                    star.style.backgroundColor = 'white';
+                    star.style.borderRadius = '50%';
+                    star.style.left = `${Math.random() * 100}%`;
+                    star.style.top = `${Math.random() * 100}%`;
+                    star.style.opacity = Math.random();
+                    star.style.animation = `twinkle ${Math.random() * 5 + 3}s ease-in-out infinite`;
+                    star.style.animationDelay = `${Math.random() * 5}s`;
+
+                    starsContainer.appendChild(star);
+                }
+            }
+
+            // 创建烟花效果
+            function createFireworks() {
+                const fireworksContainer = document.querySelector('.fireworks-container');
+                fireworksContainer.innerHTML = '';
+
+                for (let i = 0; i < 5; i++) {
+                    setTimeout(() => {
+                        const firework = document.createElement('div');
+                        firework.className = 'firework';
+                        firework.style.position = 'absolute';
+                        firework.style.width = '5px';
+                        firework.style.height = '5px';
+                        firework.style.backgroundColor = getRandomColor();
+                        firework.style.borderRadius = '50%';
+                        firework.style.left = `${Math.random() * 80 + 10}%`;
+                        firework.style.bottom = '0';
+
+                        fireworksContainer.appendChild(firework);
+
+                        // 发射动画
+                        const destination = {
+                            x: Math.random() * 40 - 20,
+                            y: -(Math.random() * 50 + 30)
+                        };
+
+                        firework.animate([
+                            { transform: 'translate(0, 0)' },
+                            { transform: `translate(${destination.x}px, ${destination.y}vh)` }
+                        ], {
+                            duration: 1000,
+                            easing: 'cubic-bezier(0.42, 0, 0.58, 1)',
+                            fill: 'forwards'
+                        }).onfinish = function () {
+                            // 爆炸动画
+                            explode(firework, destination);
+                        };
+                    }, i * 800);
+                }
+            }
+
+            // 烟花爆炸效果
+            function explode(firework, destination) {
+                const particles = 20;
+                const container = firework.parentNode;
+                const color = firework.style.backgroundColor;
+
+                firework.remove();
+
+                for (let i = 0; i < particles; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.position = 'absolute';
+                    particle.style.width = '3px';
+                    particle.style.height = '3px';
+                    particle.style.backgroundColor = color;
+                    particle.style.borderRadius = '50%';
+                    particle.style.left = `calc(${firework.style.left} + ${destination.x}px)`;
+                    particle.style.bottom = `calc(${-destination.y}vh)`;
+
+                    container.appendChild(particle);
+
+                    const angle = (i / particles) * Math.PI * 2;
+                    const distance = Math.random() * 100 + 50;
+
+                    particle.animate([
+                        { transform: 'translate(0, 0)', opacity: 1 },
+                        { transform: `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px)`, opacity: 0 }
+                    ], {
+                        duration: 1000,
+                        easing: 'cubic-bezier(0, 0, 0.2, 1)',
+                        fill: 'forwards'
+                    }).onfinish = function () {
+                        particle.remove();
+                    };
+                }
+            }
+
+            // 获取随机颜色
+            function getRandomColor() {
+                const colors = [
+                    'rgb(255, 117, 140)', // 粉红
+                    'rgb(255, 203, 107)', // 橙色
+                    'rgb(107, 255, 220)', // 青色
+                    'rgb(107, 165, 255)', // 蓝色
+                    'rgb(214, 107, 255)'  // 紫色
+                ];
+
+                return colors[Math.floor(Math.random() * colors.length)];
+            }
+
+            // 添加CSS动画
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes float {
+                    0% { transform: translateY(0) rotate(0deg); }
+                    50% { transform: translateY(-20px) rotate(20deg); }
+                    100% { transform: translateY(0) rotate(0deg); }
+                }
+                
+                @keyframes twinkle {
+                    0%, 100% { opacity: 0.3; }
+                    50% { opacity: 1; }
+                }
+                
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+
+            // 初始化显示
+            createStars();
+            showMessage(0);
+            createFireworks();
+
+            // 尝试播放背景音乐
+            try {
+                bgMusic.volume = 0.5;
+                bgMusic.play().catch(e => console.log('自动播放音乐失败:', e));
+
+                // 添加音乐播放按钮
+                const musicBtn = document.createElement('button');
+                musicBtn.innerHTML = '🔊';
+                musicBtn.style.position = 'fixed';
+                musicBtn.style.bottom = '20px';
+                musicBtn.style.right = '20px';
+                musicBtn.style.width = '40px';
+                musicBtn.style.height = '40px';
+                musicBtn.style.borderRadius = '50%';
+                musicBtn.style.background = 'rgba(255,255,255,0.2)';
+                musicBtn.style.border = 'none';
+                musicBtn.style.color = 'white';
+                musicBtn.style.fontSize = '20px';
+                musicBtn.style.cursor = 'pointer';
+
+                musicBtn.addEventListener('click', function () {
+                    if (bgMusic.paused) {
+                        bgMusic.play();
+                        musicBtn.innerHTML = '🔊';
+                    } else {
+                        bgMusic.pause();
+                        musicBtn.innerHTML = '🔇';
+                    }
+                });
+
+                document.body.appendChild(musicBtn);
+            } catch (e) {
+                console.error('音乐播放错误:', e);
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>zc和lcz的专属音乐</title>
+    <!-- PWA相关 -->
+    <meta name="theme-color" content="#141e30">
+    <meta name="description" content="zc和lcz的专属音乐，陪伴甜蜜时光">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="android-launchericon-192-192.png">
+    <style>
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+            color: #fff;
+            background: linear-gradient(135deg, #141e30, #243b55);
+        }
+
+        .container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .header {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .back-btn {
+            background: linear-gradient(45deg, #ff758c, #ff7eb3);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .music-container {
+            width: 100%;
+            max-width: 600px;
+            background: rgba(20, 30, 48, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid rgba(255, 117, 140, 0.3);
+        }
+
+        .album-cover {
+            width: 200px;
+            height: 200px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .album-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .album-cover:hover img {
+            transform: scale(1.05);
+        }
+
+        .music-info {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .music-info h2 {
+            margin: 0 0 5px 0;
+            font-size: 1.8rem;
+        }
+
+        .music-info p {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .play-btn,
+        .prev-btn,
+        .next-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .play-btn {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #ff758c, #ff7eb3);
+            border-radius: 50%;
+            box-shadow: 0 5px 15px rgba(255, 117, 140, 0.4);
+        }
+
+        .prev-btn,
+        .next-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .progress {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(45deg, #ff758c, #ff7eb3);
+            border-radius: 5px;
+            transition: width 0.1s linear;
+        }
+
+        .time {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+        }
+
+        .upload-btn {
+            margin-top: 30px;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(45deg, #11998e, #38ef7d);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-btn input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .playlist {
+            width: 100%;
+            margin-top: 30px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .playlist-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .playlist-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .playlist-item.active {
+            background-color: rgba(255, 117, 140, 0.2);
+        }
+
+        .playlist-item-info {
+            margin-left: 10px;
+        }
+
+        .playlist-item-title {
+            font-weight: bold;
+        }
+
+        .playlist-item-artist {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .album-cover.playing img {
+            animation: rotate 15s linear infinite;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    style="margin-right: 8px;">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M12 12v6"></path>
+                </svg>
+                zc和lcz的专属音乐
+            </h1>
+            <a href="index.html" class="back-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    style="margin-right: 5px;">
+                    <path d="M19 12H5M12 19l-7-7 7-7"></path>
+                </svg>
+                返回主页
+            </a>
+        </div>
+
+        <div class="music-container">
+            <div class="album-cover" id="albumCover">
+                <img src="https://via.placeholder.com/200x200/243b55/ffffff?text=zc+%E2%99%A5+lcz" alt="专辑封面"
+                    id="albumImg">
+            </div>
+
+            <div class="music-info">
+                <h2 id="musicTitle">点击上传你们的专属音乐</h2>
+                <p id="musicArtist">zc ❤️ lcz</p>
+            </div>
+
+            <div class="controls">
+                <button class="prev-btn" id="prevBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="19 20 9 12 19 4 19 20"></polygon>
+                        <line x1="5" y1="19" x2="5" y2="5"></line>
+                    </svg>
+                </button>
+                <button class="play-btn" id="playBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                </button>
+                <button class="next-btn" id="nextBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="5 4 15 12 5 20 5 4"></polygon>
+                        <line x1="19" y1="5" x2="19" y2="19"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="progress-container" id="progressContainer">
+                <div class="progress" id="progress"></div>
+            </div>
+
+            <div class="time">
+                <span id="currentTime">0:00</span>
+                <span id="totalTime">0:00</span>
+            </div>
+
+            <button class="upload-btn" id="uploadBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    style="margin-right: 8px;">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                上传音乐
+                <input type="file" id="audioFileInput" accept="audio/*">
+            </button>
+
+            <div class="playlist" id="playlist">
+                <!-- 播放列表将通过JS动态添加 -->
+            </div>
+        </div>
+    </div>
+
+    <audio id="audio"></audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // 获取DOM元素
+            const audio = document.getElementById('audio');
+            const playBtn = document.getElementById('playBtn');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const progress = document.getElementById('progress');
+            const progressContainer = document.getElementById('progressContainer');
+            const currentTime = document.getElementById('currentTime');
+            const totalTime = document.getElementById('totalTime');
+            const albumCover = document.getElementById('albumCover');
+            const albumImg = document.getElementById('albumImg');
+            const musicTitle = document.getElementById('musicTitle');
+            const musicArtist = document.getElementById('musicArtist');
+            const audioFileInput = document.getElementById('audioFileInput');
+            const playlist = document.getElementById('playlist');
+
+            // 播放列表
+            let songs = [];
+            let currentSongIndex = 0;
+
+            // 初始化
+            function init() {
+                // 检查本地存储中是否有保存的歌曲
+                const savedSongs = localStorage.getItem('loveSongs');
+                if (savedSongs) {
+                    songs = JSON.parse(savedSongs);
+                    updatePlaylist();
+
+                    if (songs.length > 0) {
+                        loadSong(0);
+                    }
+                } else {
+                    // 添加示例歌曲
+                    songs.push({
+                        title: '示例音乐',
+                        artist: 'zc ❤️ lcz',
+                        url: 'https://file-examples.com/storage/feaade38c1651bd01984236/2017/11/file_example_MP3_700KB.mp3'
+                    });
+
+                    updatePlaylist();
+                    loadSong(0);
+                }
+            }
+
+            // 更新播放列表
+            function updatePlaylist() {
+                playlist.innerHTML = '';
+
+                songs.forEach((song, index) => {
+                    const item = document.createElement('div');
+                    item.className = `playlist-item ${index === currentSongIndex ? 'active' : ''}`;
+                    item.innerHTML = `
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <circle cx="12" cy="8" r="1"></circle>
+                                <path d="M12 12v6"></path>
+                            </svg>
+                        </div>
+                        <div class="playlist-item-info">
+                            <div class="playlist-item-title">${song.title}</div>
+                            <div class="playlist-item-artist">${song.artist}</div>
+                        </div>
+                    `;
+
+                    item.addEventListener('click', () => {
+                        currentSongIndex = index;
+                        loadSong(currentSongIndex);
+                        playSong();
+                    });
+
+                    playlist.appendChild(item);
+                });
+
+                // 保存到本地存储
+                localStorage.setItem('loveSongs', JSON.stringify(songs));
+            }
+
+            // 加载歌曲
+            function loadSong(index) {
+                if (songs.length === 0) return;
+
+                currentSongIndex = index;
+                const song = songs[index];
+
+                audio.src = song.url;
+                musicTitle.textContent = song.title;
+                musicArtist.textContent = song.artist;
+
+                // 更新播放列表中的活动项
+                const playlistItems = document.querySelectorAll('.playlist-item');
+                playlistItems.forEach((item, idx) => {
+                    if (idx === index) {
+                        item.classList.add('active');
+                    } else {
+                        item.classList.remove('active');
+                    }
+                });
+            }
+
+            // 播放歌曲
+            function playSong() {
+                albumCover.classList.add('playing');
+                playBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="6" y="4" width="4" height="16"></rect>
+                        <rect x="14" y="4" width="4" height="16"></rect>
+                    </svg>
+                `;
+
+                audio.play();
+            }
+
+            // 暂停歌曲
+            function pauseSong() {
+                albumCover.classList.remove('playing');
+                playBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                `;
+
+                audio.pause();
+            }
+
+            // 上一首
+            function prevSong() {
+                currentSongIndex--;
+                if (currentSongIndex < 0) {
+                    currentSongIndex = songs.length - 1;
+                }
+
+                loadSong(currentSongIndex);
+                playSong();
+            }
+
+            // 下一首
+            function nextSong() {
+                currentSongIndex++;
+                if (currentSongIndex > songs.length - 1) {
+                    currentSongIndex = 0;
+                }
+
+                loadSong(currentSongIndex);
+                playSong();
+            }
+
+            // 更新进度条
+            function updateProgress(e) {
+                const { duration, currentTime: current } = e.srcElement;
+                const progressPercent = (current / duration) * 100;
+                progress.style.width = `${progressPercent}%`;
+
+                // 更新时间显示
+                const currentMinutes = Math.floor(current / 60);
+                const currentSeconds = Math.floor(current % 60);
+                const durationMinutes = Math.floor(duration / 60) || 0;
+                const durationSeconds = Math.floor(duration % 60) || 0;
+
+                currentTime.textContent = `${currentMinutes}:${currentSeconds.toString().padStart(2, '0')}`;
+                totalTime.textContent = `${durationMinutes}:${durationSeconds.toString().padStart(2, '0')}`;
+            }
+
+            // 设置进度条
+            function setProgress(e) {
+                const width = this.clientWidth;
+                const clickX = e.offsetX;
+                const duration = audio.duration;
+
+                audio.currentTime = (clickX / width) * duration;
+            }
+
+            // 处理文件上传
+            function handleFileUpload(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const url = URL.createObjectURL(file);
+                let title = file.name.replace(/\.[^/.]+$/, ''); // 移除扩展名
+
+                // 添加到播放列表
+                songs.push({
+                    title: title,
+                    artist: 'zc ❤️ lcz',
+                    url: url
+                });
+
+                // 更新播放列表
+                updatePlaylist();
+
+                // 加载并播放新上传的歌曲
+                loadSong(songs.length - 1);
+                playSong();
+            }
+
+            // 事件监听
+            playBtn.addEventListener('click', () => {
+                const isPlaying = albumCover.classList.contains('playing');
+
+                if (isPlaying) {
+                    pauseSong();
+                } else {
+                    playSong();
+                }
+            });
+
+            prevBtn.addEventListener('click', prevSong);
+            nextBtn.addEventListener('click', nextSong);
+
+            audio.addEventListener('timeupdate', updateProgress);
+            progressContainer.addEventListener('click', setProgress);
+
+            audio.addEventListener('ended', nextSong);
+
+            audioFileInput.addEventListener('change', handleFileUpload);
+
+            // 初始化
+            init();
+        });
+    </script>
+</body>
+
+</html>
